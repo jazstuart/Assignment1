@@ -2,14 +2,17 @@
 
 int main()
 {
-    const char message[26] = "hello";
-    char c;
+    char message[100] = "TEST CODE";
+    int index=0;
+    int value;
     
-    scanf("%c", &c);
-    printf("%c\n", c);
+    while (index < 10) 
+    {
+        value = message[index];
+        printf("%c has an ASCII value of %d\n", message[index], value);
+        index++;
+    }
     
-    printf("%c\n", message[0]);
-    printf("%s\n", message);
     
     return 0;
 }
