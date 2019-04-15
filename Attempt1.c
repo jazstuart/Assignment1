@@ -3,11 +3,12 @@
 
 void encryptRotation(char *message, int key);
 void decryptRotation(char *message, int key);
+void encryptSubstitution(char *message);
 
 int main()
 {
     int c;
-    char message[100];
+    char *message;
     int k;
     
     printf("Please select from the following options by entering the corresponding number (1-6):\n");
@@ -18,21 +19,37 @@ int main()
     printf("3. Decryption of a rotation cipher, unknown key\n");
     printf("3. Decryption of a substituation cipher, unknown key\n");
     
-    printf("Selection: ");
-    scanf("%d", &c);
+    do 
+    {
+        printf("Selection: ");
+        scanf("%d", &c);
+        if (c < 1 || c > 6) 
+        {
+            printf("Error, please enter selection as a number between 1 and 6.\n");
+        }
+    } while (c < 1 || c > 6);
     
-    if (c == 1 || c == 3) {
-        printf("Enter message to encode: ");
+    
+    if (c == 1 || c == 2) 
+    {
+        printf("\nEnter key (rotation amount): ");
+        scanf("%d", &k);
+    }
+    
+    
+    if (c == 1 || c == 3) 
+    {
+        printf("\nEnter message to encode: ");
         scanf(" %[^\n]s", message);
     }
-    else {
-        printf("Enter message to decode: ");
+    
+    else 
+    {
+        printf("\nEnter message to decode: ");
         scanf(" %[^\n]s", message);
     }
     
-    printf("Enter key: ");
-    scanf("%d", &k);
-
+    
     switch(c) {
         case 1: encryptRotation(message, k);
             printf("%s\n", message);
@@ -40,8 +57,9 @@ int main()
         case 2: decryptRotation(message, k);
             printf("%s\n", message);
             break;
-//        case 3:
-//            break;
+        case 3: encryptSubstitution(message);
+            printf("Encoded message: %s\n", message);
+            break;
 //        case 4:
 //            break;
 //        case 5:
@@ -52,104 +70,56 @@ int main()
     }
 }
     
-//    char message[100] = "JASMINE";
-//    int index = 0;
-//    int key = 4;
-//    int length;
-//    
-//    length = strlen(message);
-//    
-//    printf("Message to convert to code: %s\n", message);
-//    printf("Encoded message: ");
-//    while (index < length)
-//    {
-//        char x = message[index];
-//        
-//        x = x - key;
-//        
-//        if (x + key == 32) 
-//        {
-//            x = x + key;
-//        }
-//        else if (x >= 65 && x <= 90)
-//        {
-//            x = x;
-//        }
-//        else
-//        {
-//            x = x + 26;
-//        }
-//        
-//        printf("%c", x);
-//
-//        index++;
-//    }
-//    
-//    
-//    return 0;
-//}
 
 
-
-
-void encryptRotation(char *message, int key) {
-    
+void encryptRotation(char *message, int key) 
+{    
     int index = 0;
     int length;
     
     length = strlen(message);
     
-    printf("Encoded message: ");
+    printf("\nEncoded message: ");
     while (index < length)
     {
         char x = message[index];
-        x = x - key;
         
-        if (x + key == 32) 
-        {
-            x = x + key;
-        }
-        else if (x >= 65 && x <= 90)
-        {
-            x = x;
-        }
-        else
-        {
-            x = x + 26;
-        }
-        
-        message[index] = x;
-
-        index++;
-    }
-    
-}
-
-
-void decryptRotation(char *message, int key) {
-        
-    int index = 0;
-    int length;
-    
-    length = strlen(message);
-    
-    printf("Decoded message: ");
-    while (index < length)
-    {
-        char x = message[index];
-        x = x + key;
-        
-        if (x - key == 32) 
+        if (x >= 65 && x <= 90)
         {
             x = x - key;
+            if (x < 65) {
+                x = x + 26;
+            }
         }
-        else if (x >= 65 && x <= 90)
+        
+        
+        message[index] = x;
+
+        index++;
+    }
+    
+}
+
+
+
+void decryptRotation(char *message, int key) 
+{
+    int index = 0;
+    int length;
+    
+    length = strlen(message);
+    
+    printf("\nDecoded message: ");
+    while (index < length)
+    {
+        char x = message[index];
+                
+        if (x >= 65 && x <= 90)
         {
-            x = x;
-        }
-        else
-        {
-            x = x - 26;
+            x = x + key;
+            if (x > 90) {
+                x = x - 26;
+            }
         }
         
         message[index] = x;
@@ -159,3 +129,29 @@ void decryptRotation(char *message, int key) {
     
 }
 
+
+
+void encryptSubstitution(char *message) 
+{
+    int index = 0;
+    int length;
+    
+    length = strlen(message);
+    char x = message[index];
+    
+    while (index < length)
+    {
+        switch(x) 
+        {
+            case 65: x = 66; break;
+            case 66: x = 65; break;
+            case 67: x = 68; break;
+            case 68: x = 67; break;
+            default: x = x;
+        }
+        
+        message[index] = x;
+        index++;
+    }
+
+}
