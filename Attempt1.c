@@ -135,22 +135,47 @@ void encryptSubstitution(char *message)
 {
     int index = 0;
     int length;
+    int y;
+    
+    
     
     length = strlen(message);
-    char x = message[index];
     
     while (index < length)
     {
+        char x = message[index];
         switch(x) 
         {
-            case 65: x = 66; break;
-            case 66: x = 65; break;
-            case 67: x = 68; break;
-            case 68: x = 67; break;
-            default: x = x;
+            case 'A': y = 'Q'; break;
+            case 'B': y = 'W'; break;
+            case 'C': y = 'E'; break;
+            case 'D': y = 'R'; break;
+            case 'E': y = 'T'; break;
+            case 'F': y = 'Y'; break;
+            case 'G': y = 'U'; break;
+            case 'H': y = 'I'; break;
+            case 'I': y = 'O'; break;
+            case 'J': y = 'P'; break;
+            case 'K': y = 'A'; break;
+            case 'L': y = 'S'; break;
+            case 'M': y = 'D'; break;
+            case 'N': y = 'F'; break;
+            case 'O': y = 'G'; break;
+            case 'P': y = 'H'; break;
+            case 'Q': y = 'J'; break;
+            case 'R': y = 'K'; break;
+            case 'S': y = 'L'; break;
+            case 'T': y = 'Z'; break;
+            case 'U': y = 'X'; break;
+            case 'V': y = 'C'; break;
+            case 'W': y = 'V'; break;
+            case 'X': y = 'B'; break;
+            case 'Y': y = 'N'; break;
+            case 'Z': y = 'M'; break;
+            default: y = x;
         }
         
-        message[index] = x;
+        message[index] = y;
         index++;
     }
 
