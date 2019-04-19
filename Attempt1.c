@@ -40,22 +40,39 @@ int main()
     if (c == 1 || c == 3) 
     {
         printf("\nEnter message to encode: ");
-        scanf(" %[^\n]s", message);
     }
     
     else 
     {
         printf("\nEnter message to decode: ");
-        scanf(" %[^\n]s", message);
     }
     
+    scanf(" %[^\n]s", message);
+    
+    
+    int length;
+    length = strlen(message);
+    
+    
+    for (int index = 0; index < length; index++)
+    {
+        char x = message[index];
+        
+        if (x >= 97 && x <= 122)
+        {
+            x = x - 32;
+        }
+        
+        message[index] = x;
+    }
+
     
     switch(c) {
         case 1: encryptRotation(message, k);
-            printf("%s\n", message);
+            printf("Encoded message: %s\n", message);
             break;
         case 2: decryptRotation(message, k);
-            printf("%s\n", message);
+            printf("Decoded message: %s\n", message);
             break;
         case 3: encryptSubstitution(message);
             printf("Encoded message: %s\n", message);
@@ -79,7 +96,6 @@ void encryptRotation(char *message, int key)
     
     length = strlen(message);
     
-    printf("\nEncoded message: ");
     while (index < length)
     {
         char x = message[index];
@@ -109,7 +125,6 @@ void decryptRotation(char *message, int key)
     
     length = strlen(message);
     
-    printf("\nDecoded message: ");
     while (index < length)
     {
         char x = message[index];
@@ -135,11 +150,13 @@ void encryptSubstitution(char *message)
 {
     int index = 0;
     int length;
-    int y;
-    
-    
+    char y;
     
     length = strlen(message);
+    
+//    case 'A': printf("%c: ", x);
+//                scanf("%c", &y);
+//                break;
     
     while (index < length)
     {
