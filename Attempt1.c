@@ -3,21 +3,23 @@
 
 void encryptRotation(char *message, int key);
 void decryptRotation(char *message, int key);
-void encryptSubstitution(char *message);
+void encryptSubstitution(char *message, char *key);
+void decryptSubstitution(char *message, char *key);
 
 int main()
 {
     int c;
-    char *message;
     int k;
+    char subKey[27];
+    char message[81];
     
     printf("Please select from the following options by entering the corresponding number (1-6):\n");
     printf("1. Encryption with a rotation cipher, known key\n");
     printf("2. Decryption of a rotation cipher, known key\n");
     printf("3. Encryption with a substituation cipher, known key\n");
-    printf("3. Decryption of a substituation cipher, known key\n");
-    printf("3. Decryption of a rotation cipher, unknown key\n");
-    printf("3. Decryption of a substituation cipher, unknown key\n");
+    printf("4. Decryption of a substituation cipher, known key\n");
+    printf("5. Decryption of a rotation cipher, unknown key\n");
+    printf("6. Decryption of a substituation cipher, unknown key\n");
     
     do 
     {
@@ -32,8 +34,13 @@ int main()
     
     if (c == 1 || c == 2) 
     {
-        printf("\nEnter key (rotation amount): ");
+        printf("\nEnter key (rotation amount to the right): ");
         scanf("%d", &k);
+    }
+    else if (c == 3 || c == 4)
+    {
+        printf("Enter key (string of letters where the first letter is allocated to A, \nthe second letter to B, etc.): ");
+        scanf("%s", subKey);
     }
     
     
@@ -47,71 +54,74 @@ int main()
         printf("\nEnter message to decode: ");
     }
     
-    scanf(" %[^\n]s", message);
+    scanf(" %[^\n]", message);
     
     
     int length;
     length = strlen(message);
     
     
-    for (int index = 0; index < length; index++)
+    for (int i = 0; i < length; i++)
     {
-        char x = message[index];
+        char x = message[i];
         
-        if (x >= 97 && x <= 122)
+        if (x >= 'a' && x <= 'z')
         {
             x = x - 32;
         }
         
-        message[index] = x;
+        message[i] = x;
     }
 
     
     switch(c) {
         case 1: encryptRotation(message, k);
-            printf("Encoded message: %s\n", message);
             break;
         case 2: decryptRotation(message, k);
-            printf("Decoded message: %s\n", message);
             break;
-        case 3: encryptSubstitution(message);
-            printf("Encoded message: %s\n", message);
+        case 3: encryptSubstitution(message, subKey);
             break;
-//        case 4:
-//            break;
+        case 4: decryptSubstitution(message, subKey);
+            break;
 //        case 5:
 //            break;
 //        case 6:
 //            break;
         default: return 0;
     }
+    
+    
+    if (c == 1 || c == 3) 
+    {
+        printf("Encoded message: %s\n", message);
+    }
+    
+    else 
+    {
+        printf("Decoded message: %s\n", message);
+    }
+    
 }
     
 
 
 void encryptRotation(char *message, int key) 
 {    
-    int index = 0;
-    int length;
+    int i = 0;
     
-    length = strlen(message);
-    
-    while (index < length)
+    for (i = 0; i < strlen(message); i++)
     {
-        char x = message[index];
+        char x = message[i];
         
-        if (x >= 65 && x <= 90)
+        if (x >= 'A' && x <= 'Z')
         {
             x = x - key;
-            if (x < 65) {
+            if (x < 'A') {
                 x = x + 26;
             }
         }
         
-        
-        message[index] = x;
-
-        index++;
+        message[i] = x;
     }
     
 }
@@ -120,80 +130,57 @@ void encryptRotation(char *message, int key)
 
 void decryptRotation(char *message, int key) 
 {
-    int index = 0;
-    int length;
+    int i = 0;
     
-    length = strlen(message);
-    
-    while (index < length)
+    for (i = 0; i < strlen(message); i++)
     {
-        char x = message[index];
+        char x = message[i];
                 
-        if (x >= 65 && x <= 90)
+        if (x >= 'A' && x <= 'Z')
         {
             x = x + key;
-            if (x > 90) {
+            if (x > 'Z') {
                 x = x - 26;
             }
         }
         
-        message[index] = x;
-
-        index++;
+        message[i] = x;
     }
     
 }
 
 
 
-void encryptSubstitution(char *message) 
+void encryptSubstitution(char *message, char *key) 
 {
-    int index = 0;
-    int length;
-    char y;
+    int i = 0;
     
-    length = strlen(message);
-    
-//    case 'A': printf("%c: ", x);
-//                scanf("%c", &y);
-//                break;
-    
-    while (index < length)
+    for (i = 0; i < strlen(message); i++)
     {
-        char x = message[index];
-        switch(x) 
+        char x = message[i];
+        if (x >= 'A' && x <= 'Z')
         {
-            case 'A': y = 'Q'; break;
-            case 'B': y = 'W'; break;
-            case 'C': y = 'E'; break;
-            case 'D': y = 'R'; break;
-            case 'E': y = 'T'; break;
-            case 'F': y = 'Y'; break;
-            case 'G': y = 'U'; break;
-            case 'H': y = 'I'; break;
-            case 'I': y = 'O'; break;
-            case 'J': y = 'P'; break;
-            case 'K': y = 'A'; break;
-            case 'L': y = 'S'; break;
-            case 'M': y = 'D'; break;
-            case 'N': y = 'F'; break;
-            case 'O': y = 'G'; break;
-            case 'P': y = 'H'; break;
-            case 'Q': y = 'J'; break;
-            case 'R': y = 'K'; break;
-            case 'S': y = 'L'; break;
-            case 'T': y = 'Z'; break;
-            case 'U': y = 'X'; break;
-            case 'V': y = 'C'; break;
-            case 'W': y = 'V'; break;
-            case 'X': y = 'B'; break;
-            case 'Y': y = 'N'; break;
-            case 'Z': y = 'M'; break;
-            default: y = x;
+            x = key[x - 'A'];
         }
-        
-        message[index] = y;
-        index++;
-    }
 
+        message[i] = x;
+    }
 }
+
+
+
+void decryptSubstitution(char *message, char *key)
+{
+    int i = 0;
+    
+    for (i = 0; i < strlen(message); i++)
+    {
+        char x = message[i];
+        if (x >= 'A' && x <= 'Z')
+        {
+            x = ;
+        }
+    }
+}
+
+
