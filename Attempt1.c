@@ -1,4 +1,6 @@
-
+/*
+ * 
+ */
 
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +10,7 @@ void encryptRotation(char *message, int key);
 void decryptRotation(char *message, int key);
 void encryptSubstitution(char *message, char *key);
 void decryptSubstitution(char *message, char *key);
+void decrytRotationNoKey(char *message);
 
 int main()
 {
@@ -87,8 +90,8 @@ int main()
             break;
         case 4: decryptSubstitution(message, subKey);
             break;
-//        case 5:
-//            break;
+        case 5: decrytRotationNoKey(message);
+            break;
 //        case 6:
 //            break;
         default: return 0;
@@ -108,7 +111,9 @@ int main()
 }
     
 
-
+/*
+ * 
+ */
 void encryptRotation(char *message, int key) 
 {    
     int i = 0;
@@ -196,3 +201,57 @@ void decryptSubstitution(char *message, char *key)
 }
 
 
+
+//void decrytRotationNoKey(char *message)
+//{
+//    int i = 0;
+//    
+//    for (i = 0; i < strlen(message); i++)
+//    {
+//        char x = message[i];
+//                
+//        if (x >= 'A' && x <= 'Z')
+//        {
+//            for (int j = 0; j < 26; j++)
+//            {
+//                x = x + j;
+//                if (x > 'Z') 
+//                {
+//                    x = x - 26;
+//                }
+//            }
+//        
+//        message[i] = x;
+//        printf("%c\n", message[i]);
+//        }
+//        
+//    }
+//}
+
+void decrytRotationNoKey(char *message)
+{
+    int key = 0;
+    char x;
+    
+    for (key = 0; key < 26; key ++)
+    {
+        int i = 0;
+        char trialMessage[500];
+    
+        for (i = 0; i < strlen(message); i++)
+        {
+            x = message[i];
+            
+            if (x >= 'A' && x <= 'Z')
+            {
+                x = x + key;
+                if (x > 'Z') {
+                    x = x - 26;
+                }
+            }
+            trialMessage[i] = x;
+        }
+        
+        printf("Key = %d: %s\n", key, trialMessage);
+    }
+}
