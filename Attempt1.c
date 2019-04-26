@@ -73,12 +73,13 @@ int main()
     }
 
     
-    switch(c) {
-        case 1: printf("\nEnter key (rotation amount to the right): ");
+    switch(c) //switch case is used to implement the correct function based on the user's selection
+    { 
+        case 1: printf("Enter key (rotation amount to the right): ");
             scanf("%d", &k); //key must be entered as an integer between 0 and 25, corresponding to the rotation amount to the right. 
             encryptRotation(message, k);
             break;
-        case 2: printf("\nEnter key (rotation amount to the right): ");
+        case 2: printf("Enter key (rotation amount to the right): ");
             scanf("%d", &k); //same as encryption
             decryptRotation(message, k);
             break;
@@ -100,12 +101,12 @@ int main()
     
     if (c == 1 || c == 3) 
     {
-        printf("Encoded message: %s\n", message);
+        printf("\nEncoded message: %s\n", message);
     }
     
     else 
     {
-        printf("Decoded message: %s\n", message);
+        printf("\nDecoded message: %s\n", message);
     }
     
 }
@@ -205,32 +206,6 @@ void decryptSubstitution(char *message, char *key)
 
 
 
-//void decrytRotationNoKey(char *message)
-//{
-//    int i = 0;
-//    
-//    for (i = 0; i < strlen(message); i++)
-//    {
-//        char x = message[i];
-//                
-//        if (x >= 'A' && x <= 'Z')
-//        {
-//            for (int j = 0; j < 26; j++)
-//            {
-//                x = x + j;
-//                if (x > 'Z') 
-//                {
-//                    x = x - 26;
-//                }
-//            }
-//        
-//        message[i] = x;
-//        printf("%c\n", message[i]);
-//        }
-//        
-//    }
-//}
-
 void decrytRotationNoKey(char *message)
 {
     int key = 0;
@@ -255,7 +230,21 @@ void decrytRotationNoKey(char *message)
             trialMessage[i] = x;
         }
         
-        printf("Key = %d: %s\n", key, trialMessage);
+        char word1[] = " THE ";
+        char word2[] = " AND ";
+        char word3[] = " BE ";
+        char word4[] = " TO ";
+        char word5[] = " OF ";
+        
+        if (strstr(trialMessage, word1) != NULL || strstr(trialMessage, word2) != NULL || strstr(trialMessage, word3) != NULL || strstr(trialMessage, word4) != NULL || strstr(trialMessage, word5) != NULL) 
+        {
+            for (i = 0; i < strlen(message); i++)
+            {
+                message[i] = trialMessage[i];
+            }
+
+            printf("Key = %d: %s\n", key, trialMessage);
+        }    
     }
 }
 
@@ -310,6 +299,7 @@ void decryptSubstitutionNoKey(char *message)
     {
         printf("%d: %d\n", i, letterFrequency[i]);
     }
+    
     
     
 }
