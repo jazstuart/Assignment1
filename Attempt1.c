@@ -1,5 +1,10 @@
 /*
- * 
+ * This program allows users to select from 6 options for encrypting or decrypting code using rotation or 
+ * substitution ciphers. 
+ * The user can select from the tasks by entering a number between 1 and 6 from a menu. The user must then 
+ * enter the key if known (as a number between 0 and 25 for the rotation cipher or as a string of letters 
+ * for the substitution cipher), and the message to be encoded or decoded. The program will then produce the 
+ * encrypted or decrypted message. 
  */
 
 #include <stdio.h>
@@ -11,13 +16,14 @@ void decryptRotation(char *message, int key);
 void encryptSubstitution(char *message, char *key);
 void decryptSubstitution(char *message, char *key);
 void decrytRotationNoKey(char *message);
+void decryptSubstitutionNoKey(char *message);
 
 int main()
 {
     int c; 
     int k;
     char subKey[27]; //the key for the substitution ciphers, entered as a string of uppercase characters. A length of 27 is needed rather than 26 to account for the null character (\0) at the end of the string.
-    char message[500]; //array for the message to be encoded/decoded. Length must be large enough to ensure the array does not overflow.  
+    char message[1000]; //array for the message to be encoded/decoded. Length must be large enough to ensure the array does not overflow.  
     
     //User friendly menu to describe different options for encryption and decryption
     printf("Please select from the following options by entering the corresponding number (1-6):\n");
@@ -28,53 +34,39 @@ int main()
     printf("5. Decryption of a rotation cipher, unknown key\n");
     printf("6. Decryption of a substituation cipher, unknown key\n");
     
-    do //do-while loop is used so that the program asks for at least one selection, and repeats if the selection requirements are not met
+    do //Do-while loop is used so that the program asks for at least one selection, and repeats if the selection requirements are not met
     {
         printf("Selection: "); 
-        scanf("%d", &c); //selection must be entered as a number between 1 and 6
+        scanf("%d", &c); //Selection must be entered as a number between 1 and 6
         if (c < 1 || c > 6) //Using an if statement means that error message is printed only if the selection (c) is outside the required range
         {
             printf("Error, please enter selection as a number between 1 and 6.\n");
         }
-    } while (c < 1 || c > 6);
+    } while (c < 1 || c > 6); //This condition ensured that if the selection is outside the required conditions (i.e. less than 1 or greater than 6), the loop will repeat and ask for a new selection.
     
     
-    if (c == 1 || c == 2) //menu items 1 and 2 correspond to rotation cipher decryption or decryption, therefore an integer key is only asked for if the user selects one of these menu items
+    
+    if (c == 1 || c == 3) //Selections 1 and 3 are for encryption, therefore the program asks for a message to encode
     {
-        printf("\nEnter key (rotation amount to the right): ");
-        scanf("%d", &k); //key must be entered as an integer between 0 and 25, corresponding to the rotation amount to the right. 
-    }
-    else if (c == 3 || c == 4)
-    {
-        printf("Enter key (string of letters where the first letter is allocated to A, \nthe second letter to B, etc.): ");
-        scanf("%s", subKey);
+        printf("Enter message to encode: ");
     }
     
-    
-    if (c == 1 || c == 3) 
+    else //All other selections are for decryption
     {
-        printf("\nEnter message to encode: ");
+        printf("Enter message to decode: ");
     }
     
-    else 
-    {
-        printf("\nEnter message to decode: ");
-    }
-    
-    scanf(" %[^\n]", message);
+    scanf(" %[^\n]", message); //%[^\n] is used so that everything including whitespace is stored, until a \n character is reached
     
     
-    int length;
-    length = strlen(message);
-    
-    
-    for (int i = 0; i < length; i++)
+    //Loop to convert any entered lower case letters into upper case letters
+    for (int i = 0; i < strlen(message); i++) //i is the index of message. It must be initialised at 0 since the first element of the array is message[0]. The strlen(message) function returns the length of the array message[].
     {
         char x = message[i];
         
-        if (x >= 'a' && x <= 'z')
+        if (x >= 'a' && x <= 'z') 
         {
-            x = x - 32;
+            x = x - 32; //ASCII value of upper case letters is 32 less than lower case, therefore minusing 32 converts all lower case to upper case
         }
         
         message[i] = x;
@@ -82,18 +74,26 @@ int main()
 
     
     switch(c) {
-        case 1: encryptRotation(message, k);
+        case 1: printf("\nEnter key (rotation amount to the right): ");
+            scanf("%d", &k); //key must be entered as an integer between 0 and 25, corresponding to the rotation amount to the right. 
+            encryptRotation(message, k);
             break;
-        case 2: decryptRotation(message, k);
+        case 2: printf("\nEnter key (rotation amount to the right): ");
+            scanf("%d", &k); //same as encryption
+            decryptRotation(message, k);
             break;
-        case 3: encryptSubstitution(message, subKey);
+        case 3: printf("Enter key (string of letters where the first letter is allocated to A, \nthe second letter to B, etc.): ");
+            scanf("%s", subKey);
+            encryptSubstitution(message, subKey);
             break;
-        case 4: decryptSubstitution(message, subKey);
+        case 4: printf("Enter key (string of letters where the first letter is allocated to A, \nthe second letter to B, etc.): ");
+            scanf("%s", subKey);
+            decryptSubstitution(message, subKey);
             break;
         case 5: decrytRotationNoKey(message);
             break;
-//        case 6:
-//            break;
+        case 6: decryptSubstitutionNoKey(message);
+            break;
         default: return 0;
     }
     
@@ -112,6 +112,9 @@ int main()
     
 
 /*
+ * This function encrypts a message using a rotation cipher. 
+ * The inputs are a pointer to the array "message" (the message to be encoded) and an integer key, which is
+ * the rotation amount to the right. these are initialised using scanf in main(), then passed to the function. 
  * 
  */
 void encryptRotation(char *message, int key) 
@@ -182,7 +185,7 @@ void decryptSubstitution(char *message, char *key)
     int i = 0;
     int j = 0;
     
-    for (i = 0; i < strlen(message); i++)
+    for (i = 0; message[i] != '\0'; i++)
     {
         char x = message[i];
         if (x >= 'A' && x <= 'Z')
@@ -233,10 +236,10 @@ void decrytRotationNoKey(char *message)
     int key = 0;
     char x;
     
-    for (key = 0; key < 26; key ++)
+    for (key = 0; key < 26; key++)
     {
         int i = 0;
-        char trialMessage[500];
+        char trialMessage[1000];
     
         for (i = 0; i < strlen(message); i++)
         {
@@ -255,3 +258,59 @@ void decrytRotationNoKey(char *message)
         printf("Key = %d: %s\n", key, trialMessage);
     }
 }
+
+
+
+void decryptSubstitutionNoKey(char *message)
+{
+    int letterFrequency[26];
+    
+    for (int i = 0; i < 26; i++)
+    {
+        letterFrequency[i] = 0;
+    }
+    
+    for (int i = 0; i < strlen(message); i++)
+    {
+        char x = message[i];
+        
+        switch(x) 
+        {
+            case 'A': letterFrequency[0]++; break;
+            case 'B': letterFrequency[1]++; break;
+            case 'C': letterFrequency[2]++; break;
+            case 'D': letterFrequency[3]++; break;
+            case 'E': letterFrequency[4]++; break;
+            case 'F': letterFrequency[5]++; break;
+            case 'G': letterFrequency[6]++; break;
+            case 'H': letterFrequency[7]++; break;
+            case 'I': letterFrequency[8]++; break;
+            case 'J': letterFrequency[9]++; break;
+            case 'K': letterFrequency[10]++; break;
+            case 'L': letterFrequency[11]++; break;
+            case 'M': letterFrequency[12]++; break;
+            case 'N': letterFrequency[13]++; break;
+            case 'O': letterFrequency[14]++; break;
+            case 'P': letterFrequency[15]++; break;
+            case 'Q': letterFrequency[16]++; break;
+            case 'R': letterFrequency[17]++; break;
+            case 'S': letterFrequency[18]++; break;
+            case 'T': letterFrequency[19]++; break;
+            case 'U': letterFrequency[20]++; break;
+            case 'V': letterFrequency[21]++; break;
+            case 'W': letterFrequency[22]++; break;
+            case 'X': letterFrequency[23]++; break;
+            case 'Y': letterFrequency[24]++; break;
+            case 'Z': letterFrequency[25]++; break;
+            default: break;
+        }
+    }
+    
+    for (int i = 0; i < 26; i++)
+    {
+        printf("%d: %d\n", i, letterFrequency[i]);
+    }
+    
+    
+}
+
