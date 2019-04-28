@@ -1,10 +1,16 @@
-/*
- * This program allows users to select from 6 options for encrypting or decrypting code using rotation or 
+/* This program allows users to select from 6 options for encrypting or decrypting code using rotation or 
  * substitution ciphers. 
- * The user can select from the tasks by entering a number between 1 and 6 from a menu. The user must then 
- * enter the key if known (as a number between 0 and 25 for the rotation cipher or as a string of letters 
- * for the substitution cipher), and the message to be encoded or decoded. The program will then produce the 
- * encrypted or decrypted message. 
+ * A rotation cipher (also called a caesar cipher) is a simple method of encryption where each letter is 
+ * substituted with a letter shifted a fixed number of positions down the alphabet. For example, a shift 
+ * (referred to as the key) of 1 to the right would mean that A is replaced with Z, B is replaced with A, 
+ * C is replaced with B, etc.
+ * A substitution cipher is a method of encryption where every leter of the alphabet is replaced with another
+ * unique letter. A rotation cipher is a simple type of substitution cipher. 
+ * The user can select from differen tasks, as explained in the menu printed to stdin, by entering a number 
+ * between 1 and 6 from a menu. The user must then enter the key, if known (as a number between 0 and 25 for 
+ * the rotation cipher or as a string of letters for the substitution cipher), and the message to be encoded 
+ * or decoded. The program will then produce the encrypted or decrypted message and print it to stdout. 
+ * Limitation - the message has a maximum length of 1000 characters
  */
 
 #include <stdio.h>
@@ -13,8 +19,8 @@
 //function prototypes
 void encryptRotation(char *message, int key);
 void decryptRotation(char *message, int key);
-void encryptSubstitution(char *message, char *key);
-void decryptSubstitution(char *message, char *key);
+void encryptSubstitution(char *message, const char *key);
+void decryptSubstitution(char *message, const char *key);
 void decrytRotationNoKey(char *message);
 void decryptSubstitutionNoKey(char *message);
 
@@ -57,12 +63,13 @@ int main()
     }
     
     scanf(" %[^\n]", message); //%[^\n] is used so that everything including whitespace is stored, until a \n character is reached
+    //the name of an array without an index is a pointer to that array, therefore no & is needed. The string entered by the user is stored in the memory location for message[]. 
     
     
     //Loop to convert any entered lower case letters into upper case letters
     for (int i = 0; i < strlen(message); i++) //i is the index of message. It must be initialised at 0 since the first element of the array is message[0]. The strlen(message) function returns the length of the array message[].
     {
-        char x = message[i];
+        char x = message[i]; //message[i] is assigned to x simply so it doesn't need to be written out as many times. 
         
         if (x >= 'a' && x <= 'z') 
         {
@@ -75,71 +82,72 @@ int main()
     
     switch(c) //switch case is used to implement the correct function based on the user's selection
     { 
-        case 1: printf("Enter key (rotation amount to the right): ");
+        case 1: printf("Enter key (rotation amount of the cipher text to the right): ");
             scanf("%d", &k); //key must be entered as an integer between 0 and 25, corresponding to the rotation amount to the right. 
-            encryptRotation(message, k);
+            encryptRotation(message, k); //a pointer to "message" and the rotation key are passed as arguments to the function. This modifies "message" to produce the encrypted message. 
+            printf("\nEncoded message: %s\n", message);
             break;
-        case 2: printf("Enter key (rotation amount to the right): ");
+        case 2: printf("Enter key (rotation amount of the cipher text to the right): ");
             scanf("%d", &k); //same as encryption
-            decryptRotation(message, k);
+            decryptRotation(message, k); //same as encryption
+            printf("\nDecoded message: %s\n", message);
             break;
         case 3: printf("Enter key (string of letters where the first letter is allocated to A, \nthe second letter to B, etc.): ");
-            scanf("%s", subKey);
-            encryptSubstitution(message, subKey);
+            scanf("%s", subKey); //key is entered as a string therefore %s is used. This is stored in the array subKey[], as explained previously the array name is a pointer to that array.
+            encryptSubstitution(message, subKey); //a pointer to the array "message" and "subKey" are passed to the function. "message" is modified to produce the encrypted message, subKey is not modified. 
+            printf("\nEncoded message: %s\n", message);
             break;
         case 4: printf("Enter key (string of letters where the first letter is allocated to A, \nthe second letter to B, etc.): ");
-            scanf("%s", subKey);
-            decryptSubstitution(message, subKey);
+            scanf("%s", subKey); //same as encryption
+            decryptSubstitution(message, subKey); //same as encryption
+            printf("\nDecoded message: %s\n", message);
             break;
-        case 5: decrytRotationNoKey(message);
+        case 5: decrytRotationNoKey(message); //no key is needed, only the pointer to "message" is passed to the function.
+            printf("\nDecoded message: %s\n", message);
             break;
         case 6: decryptSubstitutionNoKey(message);
+            printf("\nDecoded message: %s\n", message);
             break;
         default: return 0;
     }
-    
-    
-    if (c == 1 || c == 3) 
-    {
-        printf("\nEncoded message: %s\n", message);
-    }
-    
-    else 
-    {
-        printf("\nDecoded message: %s\n", message);
-    }
-    
 }
     
 
-/*
- * This function encrypts a message using a rotation cipher. 
- * The inputs are a pointer to the array "message" (the message to be encoded) and an integer key, which is
- * the rotation amount to the right. these are initialised using scanf in main(), then passed to the function. 
- * 
+/* This function encrypts a message using a rotation cipher. 
+ * The inputs are a pointer to the array "message[]" (the message to be encoded) and a key, which is
+ * an integer giving the rotation amount to the right of the cipher text. These are initialised from 
+ * stdin in main(), then passed to the function. Only letters are encrypted; numbers, symbols and 
+ * whitespece are copied straight to stdout. 
+ * By using a pointer to message as one of the function arguments, the function directly modifies the 
+ * message at its memory location, therefore no return value is needed. 
  */
 void encryptRotation(char *message, int key) 
 {    
-    int i = 0;
+    int i = 0; //i is the index of message[]
     
-    for (i = 0; i < strlen(message); i++)
+    for (i = 0; i < strlen(message); i++) //initialises i = 0 to start at the first element of the array, message[0]. i is incremented while it is less than the length of "message", so that every letter is encrypted.
     {
         char x = message[i];
         
-        if (x >= 'A' && x <= 'Z')
+        if (x >= 'A' && x <= 'Z') //only letters are encrypted; numbers, symbols and whitespace are unmodified
         {
-            x = x - key;
-            if (x < 'A') {
-                x = x + 26;
+            x = x - key; //by minusing the key, the alphabet for the cipher text is shifted 1 place to the right
+            
+            if (x < 'A') //if the ASCII value falls below 65 (the value for A), a symbol will be produced so 26 is added to make it rotate back to the end of the alphabet
+            {
+                x = x + 26; 
             }
         }
         
-        message[i] = x;
+        message[i] = x; //message has now been modified at its memory location, so no return value is needed.
     }
 }
 
 
-
+/* This function works identically to encryptRotation, however the key is added instead of minused. 
+ * In this case "message" is the cipher text and the function produces the plain text which is printed to stdout.
+ */
+ 
 void decryptRotation(char *message, int key) 
 {
     int i = 0;
@@ -150,8 +158,10 @@ void decryptRotation(char *message, int key)
                 
         if (x >= 'A' && x <= 'Z')
         {
-            x = x + key;
-            if (x > 'Z') {
+            x = x + key; //this time the key is added to reverse the encryption
+            
+            if (x > 'Z') //if the ASCII value is above 90 (the value for Z), a symbol will be produced so 26 is added to make the alphabet rotate back around
+            {
                 x = x - 26;
             }
         }
@@ -163,7 +173,10 @@ void decryptRotation(char *message, int key)
 
 
 
-void encryptSubstitution(char *message, char *key) 
+/* 
+ * 
+ */
+void encryptSubstitution(char *message, const char *key) 
 {
     int i = 0;
     
@@ -181,7 +194,7 @@ void encryptSubstitution(char *message, char *key)
 
 
 
-void decryptSubstitution(char *message, char *key)
+void decryptSubstitution(char *message, const char *key)
 {
     int i = 0;
     int j = 0;
@@ -205,7 +218,10 @@ void decryptSubstitution(char *message, char *key)
 }
 
 
-
+/*
+ * This function decrypts a rotation cipher when the key is unknown. 
+ * Therefore the only input is th
+ */
 void decrytRotationNoKey(char *message)
 {
     int key = 0;
@@ -238,13 +254,13 @@ void decrytRotationNoKey(char *message)
         
         if (strstr(trialMessage, word1) != NULL || strstr(trialMessage, word2) != NULL || strstr(trialMessage, word3) != NULL || strstr(trialMessage, word4) != NULL || strstr(trialMessage, word5) != NULL) 
         {
-            for (i = 0; i < strlen(message); i++)
+            for (i = 0; i < strlen(message); i++) 
             {
                 message[i] = trialMessage[i];
             }
-
-            printf("Key = %d: %s\n", key, trialMessage);
-        }    
+        }
+        
+        printf("Key = %d: %s\n", key, trialMessage);
     }
 }
 
@@ -253,11 +269,14 @@ void decrytRotationNoKey(char *message)
 void decryptSubstitutionNoKey(char *message)
 {
     int letterFrequency[26];
+    //char commonLetters[27] = "ETAOINSHRDLUCMFWYGPBVKQJXZ"; //{'E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'U', }
+    char trialMessage[1000];
     
     for (int i = 0; i < 26; i++)
     {
         letterFrequency[i] = 0;
     }
+    
     
     for (int i = 0; i < strlen(message); i++)
     {
@@ -298,9 +317,26 @@ void decryptSubstitutionNoKey(char *message)
     for (int i = 0; i < 26; i++)
     {
         printf("%d: %d\n", i, letterFrequency[i]);
+        //for (int j = 0; j < 26; j++)
+        letterFrequency[i] = trialMessage[i];
     }
     
-    
-    
+    for (int i = 0; i < 26; ++i) 
+        {
+            for (int j = i + 1; j < 26; ++j)
+            {
+ 
+                if (letterFrequency[i] > letterFrequency[j]) 
+                {
+                    int a;
+                    a =  letterFrequency[i];
+                    letterFrequency[i] = letterFrequency[j];
+                    letterFrequency[j] = a;
+                }
+                
+            }
+            printf("%d: %d\n", i, letterFrequency[i]);
+        }
+
 }
 
