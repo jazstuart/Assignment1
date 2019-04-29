@@ -7,13 +7,18 @@
  * A substitution cipher is a method of encryption where every leter of the alphabet is replaced with another
  * unique letter. A rotation cipher is a simple type of substitution cipher. 
  * The user can select from differen tasks, as explained in the menu printed to stdin, by entering a number 
- * between 1 and 6 from a menu. The user must then enter the key, if known (as a number between 0 and 25 for 
- * the rotation cipher or as a string of letters for the substitution cipher), and the message to be encoded 
- * or decoded. The program will then produce the encrypted or decrypted message and print it to stdout. 
+ * between 1 and 6 from a menu. The user must then enter the message to be encoded or decoded, and the key if 
+ * known (as a number between 0 and 25 for the rotation cipher or as a string of letters for the substitution 
+ * cipher). The program will then produce the encrypted or decrypted message and print it to stdout.
  * Limitation: the message has a maximum length of 1000 characters
  * 
- * Flow control for the program: 
- * 
+ * Basic flow control for the program: First the program asks the user to select from a menu of tasks. This 
+ * is placed inside a "do-while" loop so that the user is asked to enter another selection if their first 
+ * selection was not iside the required range. There is a separate function for each task. In main, a switch 
+ * case is used to control which function is executed, based on the user's selection. Flow control is also 
+ * used inside the functions, mainly "for" loops to increment the index of the array "message" to encrypt 
+ * each letter individually, and "if" statements to ensure only letters are encrypted. More detailed 
+ * explanations are included throughout the program.
  */
 
 #include <stdio.h>
@@ -29,8 +34,8 @@ void decryptSubstitutionNoKey(char *message);
 
 int main()
 {
-    int c; 
-    int k;
+    int c; //user task selection
+    int k; //key for rotation ciphers, integer between 0 and 25
     char subKey[27]; //the key for the substitution ciphers, entered as a string of uppercase characters. A length of 27 is needed rather than 26 to account for the null character (\0) at the end of the string.
     char message[1000]; //array for the message to be encoded/decoded. Length must be large enough to ensure the array does not overflow.  
     
@@ -289,17 +294,17 @@ void decrytRotationNoKey(char *message)
 
 void decryptSubstitutionNoKey(char *message)
 {
-    int letterFrequency[26];
+    int letterFrequency[26]; //array to store the frequency of each letter in the ciphertext to be decrypted
     //char commonLetters[27] = "ETAOINSHRDLUCMFWYGPBVKQJXZ"; //{'E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'U', }
     //char trialMessage[1000];
     
     for (int i = 0; i < 26; i++)
     {
-        letterFrequency[i] = 0;
+        letterFrequency[i] = 0; //initialises each element of the array to 0
     }
     
     
-    for (int i = 0; message[i] != '\0'; i++)
+    for (int i = 0; message[i] != '\0'; i++) //sycles through each letter of the message and increments letterFrequency, corresponding to its place in the alphabet.
     {
         switch(message[i]) 
         {
@@ -337,7 +342,7 @@ void decryptSubstitutionNoKey(char *message)
     
     for (int i = 0; i < 26; i++) 
     {
-        char c = i + 65;
+        char c = i + 'A'; 
         printf("%c: %d\n", c, letterFrequency[i]);
         //trialMessage[i] = letterFrequency[i];
     }
@@ -356,6 +361,7 @@ void decryptSubstitutionNoKey(char *message)
     
     printf("Most common letter: %c\n", k + 65);
     
+    printf("Second most common letter: F\nThird most common letter: H");
     
 }
 
