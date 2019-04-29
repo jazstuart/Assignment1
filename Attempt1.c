@@ -10,7 +10,10 @@
  * between 1 and 6 from a menu. The user must then enter the key, if known (as a number between 0 and 25 for 
  * the rotation cipher or as a string of letters for the substitution cipher), and the message to be encoded 
  * or decoded. The program will then produce the encrypted or decrypted message and print it to stdout. 
- * Limitation - the message has a maximum length of 1000 characters
+ * Limitation: the message has a maximum length of 1000 characters
+ * 
+ * Flow control for the program: 
+ * 
  */
 
 #include <stdio.h>
@@ -173,19 +176,24 @@ void decryptRotation(char *message, int key)
 
 
 
-/* 
- * 
+/* This function encrypts a message using a substitution cipher with a key entered by the user. 
+ * The inputs are a pointer to the array "message[]" (the message to be encoded) and a pointer to the array 
+ * "key[]", which is the string of letters to be substituted for the ciphertext. Similarly to the rotation
+ * ciphers, these are initialised from stdin in main(), then passed to the function, and only letters are 
+ * encrypted.
+ * "message" is modified at its memory location to produce the encrypted text, however the key is not 
+ * modified therefore it has the datatype const char. The function has no return value. 
  */
 void encryptSubstitution(char *message, const char *key) 
 {
-    int i = 0;
+    int i = 0; //index 
     
-    for (i = 0; i < strlen(message); i++)
+    for (i = 0; i < strlen(message); i++) 
     {
-        char x = message[i];
+        char x = message[i]; 
         if (x >= 'A' && x <= 'Z')
         {
-            x = key[x - 'A'];
+            x = key[x - 'A']; //if x = A, it needs to be converted to key[0], as "key" is a string of letters where the first letter is allocated to A, the second letter to B, etc. Therefore key[x - 'A'] means that the correct element of key is assigned to x.
         }
 
         message[i] = x;
@@ -193,26 +201,30 @@ void encryptSubstitution(char *message, const char *key)
 }
 
 
-
+/* This function decrypts a message using a substitution cipher with a key entered by the user. 
+ * The inputs are the same as encryptSubstitution. 
+ * 
+ */
 void decryptSubstitution(char *message, const char *key)
 {
     int i = 0;
     int j = 0;
     
-    for (i = 0; message[i] != '\0'; i++)
+    for (i = 0; message[i] != '\0'; i++) //the condition is while message[i] is not equal to the terminating 0, therefore the loop exits once it reaches the end of the message.
     {
         char x = message[i];
         if (x >= 'A' && x <= 'Z')
         {
-            for (j = 0; j < 27; j++)
+            for (j = 0; j < 26; j++) //this loop cycles through j, which is used as the index of key. The index of key will tell us which letter of the alphabet the ciphertext letter corresponds to. 
             {
-                if (message[i] == key[j])
+                if (message[i] == key[j]) //loop cycles through j until the letters of "message" and "key" are the same. The loop then breaks, so that the value of j remains at the value of the index of "key" when it was equal to "message"
                 {
-                    break;
+                    break; //EXAMPLE: if message[i] was equal to 'A', j would be incremented until key[j] = 'A'. j will now tell us the how far along the key the ciphertext letter is, giving the plaintext letter it was assigned to. 
                 }
             } 
             
-            message[i] = 'A' + j;
+            message[i] = 'A' + j; //j is the index of key, therefore adding it to 'A' reverses the encryption. 
+            //EXAMPLE: if j = 5, then the character of message[i] was the 6th letter along in the key. This means it would have been assigned to the 6th letter of the alphabet, 'F'. By adding j to 'A', we get the ASCII value of 'A' + 6 which corresponds to 'F'.
         }   
     }
 }
@@ -220,18 +232,22 @@ void decryptSubstitution(char *message, const char *key)
 
 /*
  * This function decrypts a rotation cipher when the key is unknown. 
- * Therefore the only input is th
+ * Therefore the only input is the message, since the key is unknown and therefore can't be an input. 
+ * This function produces the most likely solution by calculating all 26 possible rotations then testing for
+ * the 5 most common english words. All 26 possible rotations are printed to stdout as a backup in case 
+ * none of the common words match, and the user can read through all possiblilities to manually find the one 
+ * which makes sense. 
  */
 void decrytRotationNoKey(char *message)
 {
-    int key = 0;
+    int key = 0; //key is the rotation amount
     char x;
     
-    for (key = 0; key < 26; key++)
+    for (key = 0; key < 26; key++) //cycles through every possible key from 0 to 25, finding trialMessage and testing if it contains the common words
     {
-        int i = 0;
-        char trialMessage[1000];
-        for (int i = 0; i < 1000; i++)
+        int i = 0; 
+        char trialMessage[1000]; //trialMessage is the array which is modified for all possible rotations, so that message is not modified until the most likely solution is found.
+        for (int i = 0; i < 1000; i++) //sets all elements of trialMessage to '\0' so that all previous values are cleared
         {
             trialMessage[i] = '\0';
         }
@@ -240,31 +256,32 @@ void decrytRotationNoKey(char *message)
         {
             x = message[i];
             
-            if (x >= 'A' && x <= 'Z')
+            if (x >= 'A' && x <= 'Z') //same as decryption when the key is known
             {
-                x = x + key;
+                x = x + key; 
                 if (x > 'Z') {
-                    x = x - 26;
+                    x = x - 26; 
                 }
             }
-            trialMessage[i] = x;
+            trialMessage[i] = x; //trialMessage becomes x, which is the possible decrypted message
         }
         
-        char word1[] = " THE ";
-        char word2[] = " AND ";
+        char word1[] = " THE "; //these are the 5 most common english words. 
+        char word2[] = " AND "; //spaces are included before and after to ensure these words are tested by themselves, rather than as part of words (eg. "other")
         char word3[] = " BE ";
         char word4[] = " TO ";
         char word5[] = " OF ";
         
+        //strstr(string1, string2) function tests if string2 is a substring of string1. If it is not equal to NULL, it means there is a match. If any of these words match it is likely to be the correct solution.
         if (strstr(trialMessage, word1) != NULL || strstr(trialMessage, word2) != NULL || strstr(trialMessage, word3) != NULL || strstr(trialMessage, word4) != NULL || strstr(trialMessage, word5) != NULL) 
         {
             for (i = 0; i < strlen(message); i++) 
             {
-                message[i] = trialMessage[i];
+                message[i] = trialMessage[i]; //if any of the words match it is likely to be the correct soltuion, therefore message is modified to become trialMessage, so it can be printed in the switch case in main.
             }
         }
         
-        printf("Key = %d: %s\n", key, trialMessage);
+        printf("Key = %d: %s\n", key, trialMessage); //trialMessage is printed for every key in case no message contains the common words
     }
 }
 
@@ -273,8 +290,8 @@ void decrytRotationNoKey(char *message)
 void decryptSubstitutionNoKey(char *message)
 {
     int letterFrequency[26];
-    char commonLetters[27] = "ETAOINSHRDLUCMFWYGPBVKQJXZ"; //{'E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'U', }
-    char trialMessage[1000];
+    //char commonLetters[27] = "ETAOINSHRDLUCMFWYGPBVKQJXZ"; //{'E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'U', }
+    //char trialMessage[1000];
     
     for (int i = 0; i < 26; i++)
     {
@@ -326,7 +343,7 @@ void decryptSubstitutionNoKey(char *message)
     }
     
     char k = 0;
-    char max = letterFrequency[k];
+    char max = letterFrequency[(int)k];
     
     for (int i = 0; i < 26; ++i)
     {
@@ -337,7 +354,8 @@ void decryptSubstitutionNoKey(char *message)
         }
     }
     
-    printf("%c\n", k + 65);
+    printf("Most common letter: %c\n", k + 65);
+    
     
 }
 
