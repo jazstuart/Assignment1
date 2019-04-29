@@ -231,7 +231,11 @@ void decrytRotationNoKey(char *message)
     {
         int i = 0;
         char trialMessage[1000];
-    
+        for (int i = 0; i < 1000; i++)
+        {
+            trialMessage[i] = '\0';
+        }
+        
         for (i = 0; i < strlen(message); i++)
         {
             x = message[i];
@@ -269,7 +273,7 @@ void decrytRotationNoKey(char *message)
 void decryptSubstitutionNoKey(char *message)
 {
     int letterFrequency[26];
-    //char commonLetters[27] = "ETAOINSHRDLUCMFWYGPBVKQJXZ"; //{'E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'U', }
+    char commonLetters[27] = "ETAOINSHRDLUCMFWYGPBVKQJXZ"; //{'E', 'T', 'A', 'O', 'I', 'N', 'S', 'H', 'R', 'D', 'L', 'U', }
     char trialMessage[1000];
     
     for (int i = 0; i < 26; i++)
@@ -278,11 +282,9 @@ void decryptSubstitutionNoKey(char *message)
     }
     
     
-    for (int i = 0; i < strlen(message); i++)
+    for (int i = 0; message[i] != '\0'; i++)
     {
-        char x = message[i];
-        
-        switch(x) 
+        switch(message[i]) 
         {
             case 'A': letterFrequency[0]++; break;
             case 'B': letterFrequency[1]++; break;
@@ -312,31 +314,30 @@ void decryptSubstitutionNoKey(char *message)
             case 'Z': letterFrequency[25]++; break;
             default: break;
         }
+        
     }
     
-    for (int i = 0; i < 26; i++)
+    
+    for (int i = 0; i < 26; i++) 
     {
-        printf("%d: %d\n", i, letterFrequency[i]);
-        //for (int j = 0; j < 26; j++)
-        letterFrequency[i] = trialMessage[i];
+        char c = i + 65;
+        printf("%c: %d\n", c, letterFrequency[i]);
+        //trialMessage[i] = letterFrequency[i];
     }
     
-    for (int i = 0; i < 26; ++i) 
+    char k = 0;
+    char max = letterFrequency[k];
+    
+    for (int i = 0; i < 26; ++i)
+    {
+        if (letterFrequency[i] > max)
         {
-            for (int j = i + 1; j < 26; ++j)
-            {
- 
-                if (letterFrequency[i] > letterFrequency[j]) 
-                {
-                    int a;
-                    a =  letterFrequency[i];
-                    letterFrequency[i] = letterFrequency[j];
-                    letterFrequency[j] = a;
-                }
-                
-            }
-            printf("%d: %d\n", i, letterFrequency[i]);
+            max = (int)letterFrequency[i];
+            k = i;
         }
-
+    }
+    
+    printf("%c\n", k + 65);
+    
 }
 
